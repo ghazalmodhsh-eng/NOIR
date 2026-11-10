@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NOIR – Product Details</title>
+
+  <script>document.documentElement.classList.add('js');</script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://images.unsplash.com">
+
+  <style>
+    :root {
+      --black: #000000;
+      --white: #ffffff;
+      --grey: rgba(255, 255, 255, 0.6);
+      --line: rgba(255, 255, 255, 0.18);
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --gutter: clamp(1.25rem, 4vw, 3rem);
+      --header-h: 4.5rem;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    html { scroll-behavior: smooth; }
+    
+    body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+
+    /* HEADER */
+    .header {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 50;
+      height: var(--header-h);
+      padding: 0 var(--gutter);
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+    }
+
+    .header__logo {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      justify-self: start;
+    }
+
+    .header__nav {
+      display: flex;
+      gap: clamp(1.25rem, 4vw, 3rem);
+    }
+
+    .header__nav a {
+      position: relative;
+      font-size: 0.9rem;
+      letter-spacing: 0.04em;
+    }
+
+    .header__nav a::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: -4px;
+      height: 1px;
+      background: currentColor;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.35s ease;
+    }
+
+    .header__nav a:hover::after { transform: scaleX(1); }
+
+    .header__cart {
+      justify-self: end;
+      display: grid;
+      place-items: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      position: relative;
+    }
+
+    .header__cart svg { width: 22px; height: 22px; }
+
+    .cart-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: var(--white);
+      color: var(--black);
+      font-size: 0.65rem;
+      font-weight: 600;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: scale(0);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .cart-badge.active { opacity: 1; transform: scale(1); }
+
+    /* PRODUCT LAYOUT */
+    .product-container {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: clamp(2rem, 5vw, 5rem);
+      padding: calc(var(--header-h) + 4rem) var(--gutter) 6rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .product-gallery {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .main-image {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      background: #111;
+    }
+
+    .thumbnails {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .thumbnail {
+      width: 80px;
+      height: 100px;
+      object-fit: cover;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: border-color 0.3s;
+    }
+
+    .thumbnail.active { border-color: var(--white); }
+
+    .product-info {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      padding-top: 1rem;
+    }
+
+    .product-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 400;
+      line-height: 1.1;
+    }
+
+    .product-price {
+      font-size: 1.2rem;
+      color: var(--grey);
+    }
+
+    .option-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .option-label {
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--grey);
+    }
+
+    .sizes, .colors {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .size-btn, .color-btn {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--white);
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+    }
+
+    .size-btn:hover, .size-btn.active {
+      border-color: var(--white);
+      background: var(--white);
+      color: var(--black);
+    }
+
+    .color-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      padding: 0;
+    }
+
+    .color-btn.active {
+      box-shadow: 0 0 0 2px var(--black), 0 0 0 3px var(--white);
+    }
+
+    .add-btn {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: var(--white);
+      color: var(--black);
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .add-btn:hover { background: #ddd; }
+
+    @media (max-width: 768px) {
+      .product-container {
+        grid-template-columns: 1fr;
+        padding-top: calc(var(--header-h) + 2rem);
+      }
+      .header { padding: 0 1rem; }
+      .header__nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <a href="index.html" class="header__logo">NOIR</a>
+    <nav class="header__nav">
+      <a href="woman.html">Women</a>
+      <a href="men.html">Men</a>
+      <a href="kids.html">Kids</a>
+    </nav>
+    <a href="cart.html" class="header__cart">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 8h14l-1 12H6L5 8Z"/>
+        <path d="M9 8V6a3 3 0 0 1 6 0v2"/>
+      </svg>
+      <span class="cart-badge" id="cartBadge">0</span>
+    </a>
+  </header>
+
+  <main class="product-container" id="productContainer">
+    <p style="grid-column: 1/-1; text-align: center; color: var(--grey); padding: 4rem;">Loading product...</p>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="transitions.js"></script>
+  <script>
+    (() => {
+      const container = document.getElementById('productContainer');
+
+      // Cart Badge
+      function updateCartBadge() {
+        const badge = document.getElementById('cartBadge');
+        if (!badge) return;
+        const cart = JSON.parse(localStorage.getItem('noirCart')) || [];
+        const count = cart.length;
+        badge.textContent = count;
+        if (count > 0) badge.classList.add('active');
+        else badge.classList.remove('active');
+      }
+      updateCartBadge();
+
+      // Get Product ID
+      const params = new URLSearchParams(window.location.search);
+      const productId = parseInt(params.get('id'));
+
+      if (!productId) {
+        container.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding:4rem;">No product selected. <a href="index.html" style="text-decoration:underline;">Go back</a></p>';
+        return;
+      }
+
+      fetch('data.json')
+        .then(res => res.json())
+        .then(products => {
+          const product = products.find(p => p.id === productId);
+          if (!product) {
+            container.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding:4rem;">Product not found. <a href="index.html" style="text-decoration:underline;">Go back</a></p>';
+            return;
+          }
+          renderProduct(product);
+        })
+        .catch(err => {
+          console.error(err);
+          container.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding:4rem; color: #ff5555;">Error loading product.</p>';
+        });
+
+      function renderProduct(product) {
+        const thumbnailsHTML = product.images.map((img, i) => `
+          <img class="thumbnail ${i === 0 ? 'active' : ''}" src="${img}" data-src="${img}">
+        `).join('');
+
+        const sizesHTML = product.sizes.map((size, i) => `
+          <button class="size-btn ${i === 0 ? 'active' : ''}">${size}</button>
+        `).join('');
+
+        const colorsHTML = product.colors.map((color, i) => `
+          <button class="color-btn ${i === 0 ? 'active' : ''}" style="background-color: ${color.hex};" data-color="${color.name}"></button>
+        `).join('');
+
+        container.innerHTML = `
+          <div class="product-gallery">
+            <img class="main-image" id="mainImage" src="${product.images[0]}" alt="${product.name}">
+            <div class="thumbnails">${thumbnailsHTML}</div>
+          </div>
+          <div class="product-info">
+            <h1 class="product-title">${product.name}</h1>
+            <p class="product-price">${product.price}</p>
+
+            <div class="option-group">
+              <span class="option-label">Size</span>
+              <div class="sizes" id="sizeList">${sizesHTML}</div>
+            </div>
+
+            <div class="option-group">
+              <span class="option-label">Color</span>
+              <div class="colors" id="colorList">${colorsHTML}</div>
+            </div>
+
+            <button class="add-btn" id="addToCartBtn">Add to Cart</button>
+          </div>
+        `;
+
+        const mainImage = document.getElementById('mainImage');
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        const sizeBtns = document.querySelectorAll('.size-btn');
+        const colorBtns = document.querySelectorAll('.color-btn');
+        const addBtn = document.getElementById('addToCartBtn');
+
+        thumbnails.forEach(thumb => {
+          thumb.addEventListener('click', () => {
+            mainImage.src = thumb.dataset.src;
+            thumbnails.forEach(t => t.classList.remove('active'));
+            thumb.classList.add('active');
+          });
+        });
+
+        sizeBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            sizeBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+          });
+        });
+
+        colorBtns.forEach(btn => {
+          btn.addEventListener('click', () => {
+            colorBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+          });
+        });
+
+        addBtn.addEventListener('click', () => {
+          const selectedSize = document.querySelector('.size-btn.active').textContent;
+          const selectedColor = document.querySelector('.color-btn.active').dataset.color;
+
+          const item = {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.images[0],
+            size: selectedSize,
+            color: selectedColor
+          };
+
+          let cart = JSON.parse(localStorage.getItem('noirCart')) || [];
+          cart.push(item);
+          localStorage.setItem('noirCart', JSON.stringify(cart));
+          updateCartBadge();
+
+          const originalText = addBtn.textContent;
+          addBtn.textContent = 'Added to Cart!';
+          addBtn.style.background = '#00ff64';
+          addBtn.style.color = '#000';
+          setTimeout(() => {
+            addBtn.textContent = originalText;
+            addBtn.style.background = '';
+            addBtn.style.color = '';
+          }, 1500);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
